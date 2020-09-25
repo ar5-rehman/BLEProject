@@ -1,0 +1,75 @@
+<resources>
+    <string name="app_name">Paybox Credit Card</string>
+    <string name="title">Amount</string>
+    <string name="servicedesc">Host Card Emulator Service</string>
+    <string name="aiddescription">Sample AID for testing</string>
+    <string name="action_settings">Settings</string>
+    <string name="tab1">Pay</string>
+    <string name="tab2">How To</string>
+    <string name="tab3">Contact Us</string>
+    <string name="send_to_tenant">Send to Tenant</string>
+    <string name="add_device">Add device</string>
+    <string name="wallet_balance">Wallet balance</string>
+    <string name="link">howto.limitedresources.us</string>
+    <string name="version">V1.1 4/25/19</string>
+    <string name="_0">$ 0</string>
+    <string name="todo">TODO</string>
+    <string name="tenant_refund">Refund tenant</string>
+    <string name="delete">Delete</string>
+    <string name="getPrice">Get price</string>
+
+    <string name="card_number_hint">1234 1234 1234 1234</string>
+    <string name="cvc_number_hint">CVC</string>
+    <string name="cvc_amex_hint">CVV</string>
+    <string name="cvc_multiline_helper">123</string>
+    <string name="cvc_multiline_helper_amex">1234</string>
+    <string name="valid_digits">0123456789</string>
+    <string name="zip_helper">12345</string>
+    <string name="amex_short">Amex</string>
+    <string name="visa">Visa</string>
+    <string name="discover">Discover</string>
+    <string name="jcb">JCB</string>
+    <string name="diners_club">Diners Club</string>
+    <string name="mastercard">MasterCard</string>
+    <string name="unionpay">UnionPay</string>
+    <string name="unknown">Unknown</string>
+
+    <!-- Tap to Pay messages -->
+    <string name="Error_TapToPay_iniSTate" translatable="false">Please select target device and charge credit card before tap to pay"</string>
+    <string name="Error_TapToPay_ChargeState">Please charge credit card before tap to pay</string>
+    <string name="Error_balance">Required time is insufficient for required time click on charge credit card again</string>
+    <string name="Error_NFC" translatable="false">NFC is not available on your device</string>
+    <string name="TapToPay_Positive">Approach your phone to target device</string>
+
+    <!-- get price messages -->
+    <string name="Error_getPrice_noID">Device ID is empty Please enter a valid device ID of 6digits"</string>
+    <string name="Error_getPrice_invalidID">Invalid ID, Please enter a valid device ID of 6 digits</string>
+    <string name="Error_getPrice_chargeState">Please charge credit card for current state before switching device</string>
+    <string name="Error_getPrice_PayState">Please pay for current device before switching device</string>
+    <string name="getPrice_Positive">Approach your phone to target device</string>
+
+    <!-- charge credit card messages -->
+    <string name="charge_Error_getPriceState">Please add valid device ID and get price before charge credit card"</string>
+    <string name="charge_Error_tapToPayState">Please pay for current device before charge credit card again</string>
+    <string name="charge_Error_invalidCard">Invalid Card informations</string>
+    <string name="charge_negative">Payment failed</string>
+    <string name="charge_validCard">Valid card Info</string>
+    <string name="charge_Postive">Payment successful please click on tap to pay and approach tour phone to Paybox</string>
+
+    <!-- NFC messages-->
+    <string name="NFC_initState">Please get price and charge credit card before paying</string>
+    <string name="NFC_chargeState">Please charge your credit card befor paying</string>
+    <string name="NFC_tapToPay">Please click on tap to pay</string>
+    <string name="NFC_positive">Payment successful</string>
+    <string name="NFC_deviceMatch">Payment sent</string>
+    <string name="NFC_deviceError">Please check device id of Paybox</string>
+    <string name="NFC_aborted">Communication lost</string>
+    <string name="uknown_name">Unknown device</string>
+    <string name="total_amount">Total Amount : $0.0</string>
+    <string name="button_refresh">Find paybox</string>
+    <string name="label_pulses">P:</string>
+    <string name="label_duration">Min:</string>
+    <string name="label_money_type">C:</string>
+
+
+</resources>

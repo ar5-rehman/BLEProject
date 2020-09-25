@@ -1,0 +1,53 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar" />
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="PrimaryButton" parent="Theme.AppCompat">
+        <item name="colorButtonNormal">@color/buttonColor</item>
+        <item name="colorControlHighlight">@color/colorAccent</item>
+    </style>
+
+    <style name="WindowTitleBackground">
+        <item name="android:background">@color/buttonColor</item>
+    </style>
+
+    <style name="PrimaryFlatButton" parent="Theme.AppCompat.Light">
+        <item name="android:buttonStyle">@style/Widget.AppCompat.Button.Borderless.Colored</item>
+        <item name="colorControlHighlight">@color/colorAccent</item>
+        <item name="colorAccent">@color/colorPrimary</item>
+    </style>
+
+    <dimen name="normalText">20sp</dimen>
+    <dimen name="itemsHeight">40dp</dimen>
+    <dimen name="normalSpacing">25dp</dimen>
+
+    <style name="button_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/btn_box</item>
+        <item name="android:textColor">#000</item>
+        <item name="android:popupBackground">@color/btnBlue</item>
+    </style>
+
+    <style name="button_grey">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@color/buttonColor</item>
+        <item name="android:textColor">#000</item>
+        <item name="android:popupBackground">@color/btnBlue</item>
+    </style>
+
+    <style name="delete_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/delete_box</item>
+        <item name="android:textColor">#000</item>
+        <item name="android:popupBackground">@color/buttonColor</item>
+    </style>
+</resources>

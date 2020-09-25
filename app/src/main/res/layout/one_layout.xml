@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <LinearLayout
+        android:id="@+id/top"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/btnBlue"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/Pay"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:fontFamily="@font/alike"
+            android:layout_weight="1.0"
+            android:background="@color/btnBlue"
+            android:text="@string/tab1" />
+        <Button
+            android:id="@+id/HowTo"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:fontFamily="@font/alike"
+            android:background="@color/btnBlue"
+            android:layout_weight="1.0"
+            android:text="@string/tab2" />
+        <Button
+            android:id="@+id/Contact"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:fontFamily="@font/alike"
+            android:background="@color/btnBlue"
+            android:layout_weight="1.0"
+            android:text="@string/tab3" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/devConfig"
+        android:layout_width="match_parent"
+        android:layout_below="@id/top"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+    <TextView
+        android:id="@+id/IDhead"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        android:fontFamily="@font/alike"
+        android:textColor="#000"
+        android:layout_marginTop="5dp"
+        android:text="Machine ID"
+        />
+    <EditText
+        android:id="@+id/inputID"
+        android:layout_width="fill_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="5dp"
+        android:textSize="16sp"
+        android:hint="Enter Machine ID to use Credit card payement"
+        android:ems="10"
+        android:inputType="numberDecimal"
+        android:fontFamily="@font/alike"
+         />
+
+    <TextView
+        android:id="@+id/Timehead"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:textSize="12sp"
+        android:fontFamily="@font/alike"
+        android:textColor="#000"
+        android:text="Time Needed"
+        />
+
+    </LinearLayout>
+
+
+
+    <Spinner
+        android:id="@+id/TimeNeeded"
+        android:layout_width="150dp"
+        android:layout_alignStart="@id/devConfig"
+        android:layout_height="@dimen/itemsHeight"
+        android:layout_below="@id/devConfig"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/box" />
+    <Button
+        android:id="@+id/getPrice"
+        android:layout_height="wrap_content"
+        style="@style/button_style"
+        android:layout_alignBottom="@id/TimeNeeded"
+        android:layout_alignTop="@id/TimeNeeded"
+        android:layout_toEndOf="@id/TimeNeeded"
+        android:layout_marginStart="35dp"
+        android:layout_width="150dp"
+        android:fontFamily="@font/alike"
+        android:layout_gravity="center"
+        android:text="  Get Price  " />
+
+
+
+    <LinearLayout
+        android:id="@+id/price"
+        android:layout_width="match_parent"
+        android:layout_below="@id/TimeNeeded"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <Button
+            android:id="@+id/refresh"
+            style="@style/button_style"
+            android:fontFamily="@font/alike"
+            android:layout_weight="1.0"
+            android:layout_gravity="center"
+            android:layout_height="@dimen/itemsHeight"
+            android:text="@string/button_refresh" />
+        <ListView
+            android:id="@+id/devicesList"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="50dp"
+            android:layout_width="match_parent"
+            android:divider="@color/btnBlue"
+            android:dividerHeight="2dp"
+            android:layout_height="10dp" />
+        <TextView
+            android:id="@+id/amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:fontFamily="@font/alike"
+            android:text="@string/total_amount"
+            android:textColor="#000"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/card"
+        android:layout_below="@id/price"
+        android:layout_marginLeft="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        android:fontFamily="@font/alike"
+        android:textColor="#000"
+        android:layout_marginTop="10dp"
+        android:text="Card Number"
+        />
+
+    <com.stripe.android.view.IconTextInputLayout
+        android:id="@+id/cardNum"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/price"
+        android:layout_height="wrap_content"
+        android:hint="@string/acc_label_card_number"
+        android:layout_marginTop="@dimen/add_card_element_vertical_margin"
+        >
+
+        <com.stripe.android.view.CardNumberEditText
+            android:id="@+id/InputCardNum"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:digits="@string/valid_digits"
+            android:drawablePadding="@dimen/card_icon_multiline_padding"
+            android:drawableStart="@drawable/ic_unknown"
+            android:imeOptions="actionNext"
+            android:inputType="number"
+            android:nextFocusDown="@+id/expDate"
+            android:nextFocusForward="@+id/expDate"
+            />
+
+    </com.stripe.android.view.IconTextInputLayout>
+
+    <LinearLayout
+        android:id="@+id/secondLine"
+        android:layout_width="match_parent"
+        android:layout_below="@id/cardNum"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/add_card_element_vertical_margin"
+        android:baselineAligned="false"
+        android:orientation="horizontal"
+        >
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/exp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/add_card_expiry_middle_margin"
+            android:layout_weight="1"
+            android:hint="@string/acc_label_expiry_date"
+            >
+
+            <com.stripe.android.view.ExpiryDateEditText
+                android:id="@+id/expDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionNext"
+                android:inputType="date"
+                android:maxLength="@integer/date_length"
+                android:nextFocusDown="@+id/InputCSV"
+                android:nextFocusForward="@+id/InputCSV"
+                />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/CSV"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/add_card_expiry_middle_margin"
+            android:layout_weight="1"
+            >
+
+            <com.stripe.android.view.StripeEditText
+                android:id="@+id/InputCSV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:digits="@string/valid_digits"
+                android:imeOptions="actionNext"
+                android:hint="CSV"
+                android:inputType="numberPassword"
+                android:nextFocusDown="@+id/et_add_source_postal_ml"
+                android:nextFocusForward="@+id/et_add_source_postal_ml"
+                />
+
+        </android.support.design.widget.TextInputLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/sendandcharge"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/secondLine"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="40dp"
+        android:orientation="horizontal" >
+
+    <Button
+        android:layout_height="wrap_content"
+        style="@style/button_style"
+        android:layout_width="wrap_content"
+        android:fontFamily="@font/alike"
+        android:layout_marginStart="7dp"
+        android:id="@+id/charge"
+        android:layout_weight="1.0"
+        android:text="Charge Credit Card" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/labels"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/sendandcharge"
+        android:layout_marginTop="10dp"
+        android:layout_weight="1.0"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/label_money_Type"
+            android:layout_width="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_height="@dimen/labels_height"
+            android:layout_weight="1"
+            android:textColor="@color/colorPrimaryDark"
+            android:fontFamily="@font/alike"
+            android:text="@string/label_money_type" />
+
+        <TextView
+            android:id="@+id/label_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/labels_height"
+            android:layout_weight="1"
+            android:textColor="@color/colorPrimaryDark"
+            android:fontFamily="@font/alike"
+            android:text="@string/label_duration" />
+
+        <TextView
+            android:id="@+id/label_pulses"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/labels_height"
+            android:layout_weight="1"
+            android:textColor="@color/colorPrimaryDark"
+            android:fontFamily="@font/alike"
+            android:text="@string/label_pulses" />
+    </LinearLayout>
+
+</RelativeLayout>
