@@ -5,10 +5,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.bluetooth.BluetoothGatt;
-import android.bluetooth.BluetoothGattCallback;
-import android.bluetooth.BluetoothGattCharacteristic;
-import android.bluetooth.BluetoothProfile;
 import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanSettings;
 import android.content.BroadcastReceiver;
@@ -31,8 +27,6 @@ import android.os.ParcelUuid;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -49,15 +43,17 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.security.spec.KeySpec;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-
 import com.stripe.android.Stripe;
 import com.stripe.android.TokenCallback;
 import com.stripe.android.model.Card;
@@ -68,6 +64,8 @@ import com.stripe.android.view.StripeEditText ;
 
 import static android.content.ContentValues.TAG;
 import static com.example.pc.payboxappCreditCard.BluetoothLeService.EXTRAS_DEVICE_NAME;
+import static com.example.pc.payboxappCreditCard.Device.load;
+import static com.example.pc.payboxappCreditCard.Device.loadLabel;
 import static com.example.pc.payboxappCreditCard.Device.makeDevice;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -84,24 +82,26 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class MainActivity extends Activity implements AdapterView.OnItemSelectedListener {
     private LeDeviceListAdapter deviceListAdapter;
+    private HashMap<String,String> mapp;
     private ArrayList<BluetoothDevice> devices_ble = new ArrayList<>();
+    private ArrayList<String> deviceDetails =new ArrayList<>();
     BluetoothAdapter btAdapter;
     private BluetoothLeScanner btScanner =
             BluetoothAdapter.getDefaultAdapter().getBluetoothLeScanner();
 
     private BluetoothLeService BleServe;
     private String deviceAddress;
-    private  boolean mScanning  = false ;
+    private  boolean mScanning = false ;
     private final static int REQUEST_ENABLE_BT = 1;
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
     private static final long SCAN_PERIOD = 20000;
     private static final String URL_getDevice = "https://payboxtimer.com/api/device_number?number=" ;
     private int DevicePosition = 0 ;
-    Toast toast ;
+    Toast toast;
     boolean active  =false  ;
     enum AppState {get_price, chargeCredit , paying}
 
-    enum AsyncCallType { getPrice,getGetPrice_position, chargeCredit , getKey}
+    enum AsyncCallType { getPrice, getGetPrice_position, chargeCredit , getKey}
     AsyncCallType callType ;
     private  AppState  appState  = AppState.get_price ;
 
@@ -131,15 +131,18 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 
     ProgressDialog progressDialog;
     private String devid ="";
+    private  String machineName = "";
+    private String machineId;
 
     // times Set
     private List<String> timeList = Arrays.asList("20 min", "40 min", "60 min","80 min", "120 min", "140 min",  "160 min");
     // target device
-    private Device device = null ;
-
+    public Device device = null ;
     private boolean connected = false ;
     private String connected_name = ""  ;
     private String key = "pk_live_pOyIIOz5rG8rrlAGorSrFn3q00WEpXWHGu" ;
+
+    MachineDetailsPojo machineDetails;
 
    // key = "pk_test_TZeQn0EcB7pf8dPM8A1RKvz800DT9SVL1s" ;
 
@@ -183,6 +186,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
                 if (intent.getStringExtra(EXTRAS_DEVICE_NAME).equals(device.getId() )) {
                     connected = true ;
                     connected_name = device.getId() ;
+
                     setToast("Paybox " + device.getId() + " connected") ;
                     deviceID.setText(device.getId() );
                     appState = AppState.chargeCredit ;
@@ -234,6 +238,11 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
         setContentView(R.layout.one_layout);
 //         getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.title_text);
 
+        machineDetails = new MachineDetailsPojo();
+
+        mapp = new HashMap<>();
+
+
         context = this;
         deviceID = findViewById(R.id.inputID);
         GetPrice = findViewById(R.id.getPrice);
@@ -267,9 +276,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
         }
         catch (Exception e) {
             setToast("cant get nfc adapter");
-
         }
-
 
 
         String provider = Settings.Secure.getString(getContentResolver(),
@@ -365,8 +372,6 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
                                                     progressDialog.show(); // Display Progress Dialog
                                                     progressDialog.setCancelable(false);
                                                     new URLTASK().execute("https://payboxtimer.com/api/device_number?number=" + devid, "device-ble");
-                                                    //   if (devid!=null)
-                                                    //      Log.d(debTag,"Price for time is "+ device.getMoneyType());
                                                 }
 
                                             }
@@ -475,6 +480,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
             finish();
             return;
         }
+
 // Create the adapter to convert the array to views
         deviceListAdapter = new LeDeviceListAdapter(this, devices_ble);
         btScanner = BluetoothAdapter.getDefaultAdapter().getBluetoothLeScanner();
@@ -485,8 +491,11 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
             public void onItemClick(AdapterView<?> adapter, View v, int position,
                                     long arg3)
             {
-                BluetoothDevice dev = (BluetoothDevice) adapter.getItemAtPosition(position);
 
+                if (connected){
+                    BleServe.disconnect();}
+
+                BluetoothDevice dev = (BluetoothDevice) adapter.getItemAtPosition(position);
                 Log.d(debTag, "selected" + dev.getName()) ;
                 DevicePosition = position ;
                 new URLTASK().execute(URL_getDevice + dev.getName(), "device-ble");
@@ -497,6 +506,8 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
         Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
         bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
         if(btAdapter!=null) {
+            deviceListAdapter.clear();
+            deviceListAdapter.notifyDataSetChanged();
             startScanning();
         }
     }
@@ -525,15 +536,27 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
                     super.onScanResult(callbackType, result);
                     if(!devices_ble.contains(result.getDevice())) {
                         if (deviceListAdapter != null ) {
-                            deviceListAdapter.add(result.getDevice());
-                            deviceListAdapter.notifyDataSetChanged();
-                            setListViewHeightBasedOnItems(devicesList);
+                           String str =  result.getDevice().getName();
+                           if(str.length()==6 && str!=null) {
+
+                               new URLTASK().execute("https://payboxtimer.com/api/device_number?number=" + str, "label");
+
+                               if(chk){
+
+                                       deviceListAdapter.add(result.getDevice());
+                                       deviceListAdapter.notifyDataSetChanged();
+                                       setListViewHeightBasedOnItems(devicesList);
+
+                               }
+                           }
                         }
                     }
 
                 }
             };
 
+
+    boolean chk = false;
     private void startScanning() {
 
             // Stops scanning after a pre-defined scan period.
@@ -542,7 +565,8 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
                 public void run() {
                     mScanning = false;
                     Log.d(debTag, "stop scanning") ;
-                    btScanner.stopScan(leScanCallback);
+                        btScanner.stopScan(leScanCallback);
+
                 }
             }, SCAN_PERIOD);
             ParcelUuid  target = new ParcelUuid(UUID.fromString("9a8ca9ef-e43f-4157-9fee-c37a3d7dc12d")) ;
@@ -664,10 +688,6 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
             final boolean result = BleServe.connect(deviceAddress);
             Log.d(debTag, "Connect request result=" + result);
         }
-
-        // Initializes list view adapter.
-     //   setListAdapter(devicesListAdapter);
-//        startScanning();
     }
 
     @Override
@@ -706,11 +726,27 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
         @SuppressLint("SetTextI18n")
         @Override
         protected String doInBackground(String... urls) {
-            if (urls[0].equals("getKey")){
 
+            try {
+                if(urls[1].equals("label")){
+                    ret =  GetData.downloadDataFromUrl(urls[0]);
+                    device = makeDevice(ret);
 
+                        machineName = device.getLabel();
+                        machineId = device.getId();
+                        mapp.put(machineId, machineName);
+                        deviceDetails.add(machineName);
+
+                    chk = true;
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+              if (urls[0].equals("getKey")){
                 callType =AsyncCallType.getKey;
-                User user = new User() ;
+                User user = new User();
                 ret = user.getActiveStripePublicKey(device.getLandlordEmail()) ;
                 return ret ;
             }
@@ -734,13 +770,13 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 //                res = new CreditCardChargeResult(true , "{\"success\":true,\"msg\":\"Charge successful.\"}");
                 ret  = res.getMessage();
 
+
+
                 Log.d(debTag, " Payement result " + ret);
 
                 return ret;
             }
             else return null ;
-
-
         }
 
         // onPostExecute displays the results of the doInBackgroud and also we
@@ -754,7 +790,8 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
                 if (callType ==AsyncCallType.getPrice) {
                     device = makeDevice(ret);
                     if (device == null) {
-                        if (ret.equals("{\"success\":false}") && callType == AsyncCallType.getPrice) setToast("Device not found");
+                        if (ret.equals("{\"success\":false}") && callType == AsyncCallType.getPrice)
+                            setToast("Device not found");
                         Log.d(debTag, "device null ");
                         ret = null;
                     }
@@ -763,16 +800,9 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
                         float prix = device.getPriceForTime(timeNeeded) ;
                         if (prix <1 ) prix = 1 ;
                         Price.setText("Total amount : $"+prix);
+
                         Log.d(debTag, "finish");
                        connectDevice(device.getId()) ;
-
-                       /* if (!connected ||  !connected_name.equals(device.getId())){
-                            stopScanning();
-                            BleServe.connect(deviceAddress) ;
-                            //BleServe.connect(devices_ble.get(i).getAddress());
-                        }*/
-
-
                     }
                 }
                 // getkey
@@ -820,7 +850,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
             }
 
         }
-    }
+}
 //
 //
 //
@@ -882,20 +912,25 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 
 
     private class LeDeviceListAdapter extends ArrayAdapter<BluetoothDevice> {
+
         public LeDeviceListAdapter(Context context, ArrayList<BluetoothDevice> devices) {
             super(context, 0, devices);
+
         }
 
         @NonNull
         @Override
         public View getView(int position, View view, ViewGroup parent) {
-            // General ListView optimization code.
             BluetoothDevice device = getItem(position);
+
             if (view == null) {
                 view = LayoutInflater.from(getContext()).inflate(R.layout.ble_item, parent, false);
             }
             TextView devName = view.findViewById(R.id.device_name) ;
-            devName.setText(device.getName()  );
+            devName.setText(device.getName() + " " + mapp.get(device.getName()));
+
+
+
             return view;
         }
     }
