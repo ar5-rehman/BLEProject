@@ -6,6 +6,8 @@ import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import javax.net.ssl.HttpsURLConnection;
+
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -23,7 +25,10 @@ public class Device
     private boolean isPublic = false;
     public String debTag = "myDebug" ;
     public Device() {}
-    public Device(String id) { setId(id); }
+    public Device(String id)
+    {
+        setId(id);
+    }
     public Device(String id, String label, String moneyType, int mins)
     {
         this.id = id;
@@ -114,13 +119,34 @@ public class Device
             Log.d("myDebug", "exception " + e.toString());}
         return null;
     }
+
+    public  static Device loadLabel(String id)
+    {
+        String linkUrl = "https://payboxtimer.com/api/device_number?number=" + id;
+
+        Device de =  new Device();
+        try {
+        JSONObject obj = new JSONObject(linkUrl.toString());
+
+            if (!obj.getBoolean("success")) {
+                Log.d("myDebug", "obj not successful) ") ;
+                return null;
+            }
+
+            JSONObject dev = obj.getJSONObject("device");
+            de.label = dev.getString("label");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        return de;
+    }
     public static Device load(final String id)
     {
          String debTag = "myDebug" ;
         String linkUrl = "https://payboxtimer.com/api/device_number?number=" + id;
         URL url;
-
-
 
         try
         {
